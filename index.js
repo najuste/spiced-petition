@@ -11,15 +11,20 @@ app.use(
         extended: false
     })
 );
-app.use(require("cookie-parser")());
+var cookieSession = require("cookie-session");
+app.use(
+    cookieSession({
+        secret: "a really hard to guess secret",
+        // TODO: NEXT LINE ONLY FOR TESTING
+        maxAge: 1000 * 60 * 5
+        // maxAge: 1000 * 60 * 60 * 24 * 14
+    })
+);
 
 app.use(function(req, res, next) {
-    //
-    if (!req.cookies.signed && req.url !== "/petition") {
-        // you have to make sure if user is going to cookie page not to redirect there
+    if (req.session.length == 0 && req.url !== "/petition") {
         res.redirect("/petition");
-    } else if (req.cookies.signed && req.url == "/petition") {
-        // you have to make sure if user is going to cookie page not to redirect there
+    } else if (req.session.signId && req.url == "/petition") {
         res.redirect("/thanks");
     } else {
         next();
@@ -34,29 +39,46 @@ app.get("/petition", function(req, res) {
         layout: "main"
     });
 });
+
+var id;
 app.post("/petition", function(req, res) {
     let first = req.body.first;
     let last = req.body.last;
-    let sign = req.body.signature;
+    let sign = req.body.sign;
     // updating database
     db
         .signPetition(first, last, sign)
         .then(function(results) {
-            console.log(results.rows);
+            id = results.rows[0].id;
+            console.log("Id of user from db", results.rows[0].id);
+
+            req.session.signId = id;
+            res.redirect("/thanks");
         })
         .catch(function(err) {
             console.log(err);
         });
-    //set cookies
-    res.cookie("signed", "true");
-    res.redirect("/thanks");
+    //set cookie session //get the ID from the dB
 });
 
 app.get("/thanks", function(req, res) {
-    res.render("thanks", {
-        layout: "main"
-    });
+    if (req.session.signId) {
+        //get the id data
+        db.getId(id).then(function(results) {
+            console.log(results);
+
+            res.render("thanks", {
+                resulted_id: results.rows[0].sign,
+                layout: "main"
+            });
+        });
+    } else {
+        res.render("thanks", {
+            layout: "main"
+        });
+    }
 });
+
 app.get("/signees", function(req, res) {
     // access database & populate results
     db

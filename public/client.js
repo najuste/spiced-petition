@@ -2,6 +2,7 @@ var canvas = $("#canvas");
 var cont = canvas[0].getContext("2d");
 // var cont = document.getElementById("canvas").getContext("2d");
 
+//set canvas stuff
 cont.strokeStyle = "grey";
 cont.lineWidth = 1;
 

@@ -114,13 +114,16 @@ button:hover {
 #thanks-page {
     position: relative;
 }
+#thanks-page img {
+    background-color: white;
+}
 
 #signees-page {
     position: relative;
 }
 
 ul {
-    /* list-style: none; */
+    list-style: none;
     font-style: italic;
     font-size: 16px;
 }
