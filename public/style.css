@@ -1,0 +1,135 @@
+html {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    color: #003333;
+    height: calc(100% - 250px);
+    height: -o-calc(100% - 65px); /* opera */
+    height: -webkit-calc(100% - 65px); /* google, safari */
+    height: -moz-calc(100% - 65px); /* firefox */
+}
+a {
+    color: inherit;
+}
+a:visited {
+    text-decoration: inherit;
+}
+
+header {
+    position: relative;
+    padding: 25px;
+    background-color: orange;
+    text-align: center;
+}
+
+/* header > h1 {
+    margin-top: 0;
+    padding-top: 50px;
+} */
+
+/* custom for each handlebar */
+main {
+    position: relative;
+    text-align: center;
+    min-height: 90%;
+    padding: 25px;
+    background-color: #f5f5dc;
+}
+/* h3 {
+    margin-top: 0;
+    padding-top: 50px;
+} */
+
+#petition-page {
+    position: relative;
+    margin: auto;
+    width: 80%;
+}
+#petition-msg {
+}
+.notice {
+    color: grey;
+}
+.error-msg {
+    font-style: italic;
+    display: none;
+    color: red;
+}
+#sign-block {
+    position: relative;
+    margin: auto;
+    padding: 10px;
+}
+input {
+    width: 20%;
+    min-width: 90px;
+    height: 30px;
+    border-radius: 3px;
+    padding: 0 10px;
+    box-shadow: 0 0 2px #003333;
+    margin: 5px;
+    font-size: 16px;
+}
+
+input:hover {
+    cursor: text;
+    box-shadow: none;
+}
+
+#canvas {
+    background-color: white;
+    display: block;
+    margin: 20px auto;
+    /* width: 50%;
+    min-width: 200px;
+    height: 100px; */
+    box-shadow: 0 0 2px #003333;
+}
+
+#canvas:hover {
+    cursor: text;
+    box-shadow: none;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    background-color: #ffd27f;
+    height: 30px;
+    border-radius: 3px;
+    border: 1px solid grey;
+    width: 80px;
+    font-size: 16px;
+    box-shadow: 0 0 2px #003333;
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: orange;
+    box-shadow: none;
+}
+
+#thanks-page {
+    position: relative;
+}
+
+#signees-page {
+    position: relative;
+}
+
+ul {
+    /* list-style: none; */
+    font-style: italic;
+    font-size: 16px;
+}
+li {
+    margin: 4px 0;
+}
+
+footer {
+    position: relative;
+    height: 50px;
+    background-color: orange;
+}
