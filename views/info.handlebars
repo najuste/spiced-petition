@@ -1,0 +1,19 @@
+
+<div class="desc">
+    Let me know a bit more about yourself! I'd be grateful if you could fill this form.
+    Not obligatory though.
+</div>
+<div id="info-block">
+    {{> error}}
+    <form id="info-form" method="POST">
+
+        <!-- show the name -->
+        <h4><em>{{first}} {{last}}</em></h4>
+
+        <input type="text" name="age" placeholder="Age">
+        <input type="text" name="city" placeholder="City">
+        <input type="text" name="homepage" placeholder="Homepage">
+
+        <button>Continue</button>
+    </form>
+</div>

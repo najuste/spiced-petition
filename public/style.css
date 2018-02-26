@@ -22,6 +22,20 @@ header {
     padding: 25px;
     background-color: orange;
     text-align: center;
+    color: white;
+}
+
+h1 {
+    font-size: 5vw;
+    padding: 0;
+    margin: 0;
+    margin-top: 10px;
+}
+h2 {
+    font-size: 3vw;
+    margin: 0;
+    margin-top: 10px;
+    padding: 0;
 }
 
 /* header > h1 {
@@ -34,24 +48,36 @@ main {
     position: relative;
     text-align: center;
     min-height: 90%;
-    padding: 25px;
-    background-color: #f5f5dc;
+    /* background-color: #f5f5dc; */
 }
-/* h3 {
-    margin-top: 0;
-    padding-top: 50px;
-} */
 
-#petition-page {
+#map {
+    z-index: -1;
+}
+
+#main-wrapper {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(
+        to top,
+        rgba(255, 0, 0, 0),
+        rgba(245, 245, 220, 0.8),
+        rgba(245, 245, 220, 1)
+    );
+}
+
+.page {
     position: relative;
+    width: 70%;
     margin: auto;
-    width: 80%;
 }
 #petition-msg {
 }
-.notice {
+/* .notice {
     color: grey;
-}
+} */
 .error-msg {
     font-style: italic;
     display: none;
@@ -111,15 +137,8 @@ button:hover {
     box-shadow: none;
 }
 
-#thanks-page {
-    position: relative;
-}
-#thanks-page img {
+img {
     background-color: white;
-}
-
-#signees-page {
-    position: relative;
 }
 
 ul {
@@ -131,8 +150,8 @@ li {
     margin: 4px 0;
 }
 
-footer {
-    position: relative;
-    height: 50px;
-    background-color: orange;
-}
+/* footer {
+    position: absolute;
+    top: 0;
+    height: 300px;
+} */

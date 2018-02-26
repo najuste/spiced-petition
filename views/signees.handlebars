@@ -1,9 +1,31 @@
-<h3>Check the signatures on board! <strong>{{data.length}}</strong> and counting </h3>
-<div id="signees-page">
+<div class="page">
+
+<h3>Check the last signatures on board
+    {{#if req_city}}
+    in {{req_city}}
+    {{/if}}
+</h3>
+
+<h3>Already <strong>{{data.length}}</strong> signed!</h3>
+
     <ul>
         {{#each data}}
         <li>
-                {{first}} {{last}}
+            {{#if homepage}}
+            <a href="http://{{homepage}}">{{first}} {{last}}</a>
+            {{else}}{{first}} {{last}}
+            {{/if}}
+            {{#if age}}
+             ( {{age}}
+             <!-- unless seems not working... :/ -->
+            {{#unless req_city}}
+                {{#if city}},
+                    <a href="/petition/signers/{{city}}">{{city}}</a>
+                {{/if}})
+            {{/unless}}
+
+
+            {{/if}}
         </li>
         {{/each}}
     </ul>

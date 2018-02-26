@@ -1,5 +1,6 @@
 
-<div class="page">
+<div class="page" id="start-page">
+
     <div id="petition-msg">
         <h4><ul>
             <li>Location of our devices is being tracked and we are not in control of it.
@@ -10,19 +11,19 @@
         <h3><em>Let'c call for more transparency in geoprivacy!!!</em></h3>
         <p><em>For more information check <a href="http://grantmckenzie.com/academics/GeoprivacyManifesto2017.pdf" alt="geoprivacy manifesto"> GEOPRIVACY MANIFESTO </a></em><p>
     </div>
-
     <div id="sign-block">
         {{> error}}
-        <form id="sign-form" method="POST">
+        <form id="register-form" method="POST">
+            <input type="text" name="first" placeholder="First name">
+            <input type="text" name="last" placeholder="Last name">
+            <input type="text" name="email" placeholder="Email">
+            <input type="password" name="password" placeholder="Password">
 
-            <!-- show the name -->
-            <h4><em>{{first}} {{last}}</em></h4>
-
-            <p class="notice">please sign bellow:</p>
-            <input type="hidden" name="sign" id="input-canvas" >
-            <canvas id="canvas" width ="300" height="100"></canvas>
-            <button>Sign</button>
+            <button>Register</button>
+            <p>If you already have an account, please
+            <a href="/login">Log in</a></p>
         </form>
     </div>
 
 </div>
+<script type="text/javascript" src="map.js"></script>
