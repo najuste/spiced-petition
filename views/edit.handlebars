@@ -1,0 +1,29 @@
+<div class="page">
+
+<div class="desc">
+    <p>Here's what I got about yourself! Please change whatever you like.
+    Not obligatory though.</p>
+    <p class="notice-msg">Password will stay same if you don't fill the form</a></p>
+</div>
+
+<div id="sign-block">
+    <div class="error-msg">
+    {{#if error}}
+        <p>{{error}}</p>
+    {{/if}}
+    </div>
+
+    <form id="edit-form" method="POST">
+        <input type="text" name="first" placeholder="First name" value={{data.first}}>
+        <input type="text" name="last" placeholder="Last name" value={{data.last}}>
+        <input type="text" name="email" placeholder="Email" value={{data.email}}>
+        <input type="password" name="password" placeholder="Password - only type to change">
+        <input type="text" name="age" placeholder="Age" value={{data.age}}>
+        <input type="text" name="city" placeholder="City" value={{data.city}}>
+        <input type="text" name="homepage" placeholder="Homepage" value={{data.homepage}}>
+
+        <button>Update</button>
+        <button><a href="/petition">Cancel</a></button>
+    </form>
+</div>
+</div>

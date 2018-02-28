@@ -12,17 +12,22 @@
         <p><em>For more information check <a href="http://grantmckenzie.com/academics/GeoprivacyManifesto2017.pdf" alt="geoprivacy manifesto"> GEOPRIVACY MANIFESTO </a></em><p>
     </div>
     <div id="sign-block">
-        {{> error}}
+        <div class="error-msg">
+        {{#if error}}
+            <p>{{error}}</p>
+        {{/if}}
+        </div>
+
         <form id="register-form" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="text" name="first" placeholder="First name">
             <input type="text" name="last" placeholder="Last name">
             <input type="text" name="email" placeholder="Email">
             <input type="password" name="password" placeholder="Password">
-
             <button>Register</button>
-            <p>If you already have an account, please
-            <a href="/login">Log in</a></p>
         </form>
+
+        <p>If you already have an account, please <a href="/login">Log in</a></p>
     </div>
 
 </div>

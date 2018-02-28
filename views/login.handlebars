@@ -1,17 +1,12 @@
-
 <div class="page">
-
     <div id="sign-block">
-
-        {{> error}}
+        <div class="error-msg"></div>
         <p style="color:red;font-size:20px">{{error}}</p>
         <form id="login-form" method="POST">
             <input type="text" name="email" placeholder="Email">
-            <input type="text" name="password" placeholder="Password">
+            <input type="password" name="password" placeholder="Password">
             <button>Log in</button>
-
         </form>
-
+        <p>If you don't have an account yet, please follow to <a href="/register">Registration</a></p>
     </div>
-
 </div>

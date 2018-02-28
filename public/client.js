@@ -1,15 +1,15 @@
 ///
-$("h1").css("opacity", "0");
-$("h1")
-    .delay(1000)
-    .animate({ opacity: 1 }, 3000);
-
+if ($("#start-page").length) {
+    $("h1").css("opacity", "0");
+    $("h1")
+        .delay(1000)
+        .animate({ opacity: 1 }, 3000);
+}
 /// canvas
 
 //---- /register
 
 if ($("form").length) {
-    console.log("checked that there is a form on a page");
     var first = $("input[name='first']");
     var last = $("input[name='last']");
     var email = $("input[name='email']");
@@ -18,19 +18,30 @@ if ($("form").length) {
     var signature = $("#input-canvas");
 
     $("#register-form").submit(function(e) {
+        console.log("In register form");
+
         if (
             first.val() == "" ||
             last.val() == "" ||
             email.val() == "" ||
             password.val() == ""
         ) {
-            $(".error-msg").css("display", "block");
+            $(".error-msg").val(
+                "Please input data fully. No empty fields allowed"
+            );
             e.preventDefault();
             first.val(""), last.val(""), email.val(""), password.val("");
             first.css("background", "pink");
             last.css("background", "pink");
             email.css("background-color", "pink");
             password.css("background-color", "pink");
+        } else if (email.val().indexOf("@") < 0) {
+            // FIXME: message was not appearing
+            $("#sign-block .error-msg").html(
+                `The email you typed is not valid`
+            );
+            e.preventDefault();
+            email.css("background-color", "pink");
         }
     });
 
@@ -38,7 +49,9 @@ if ($("form").length) {
 
     $("#login-form").submit(function(e) {
         if (email.val() == "" || password.val() == "") {
-            $(".error-msg").css("display", "block");
+            $(".error-msg").val(
+                "Please input data fully. We can't let you in."
+            );
             e.preventDefault();
             email.val(""), password.val("");
             email.css("background-color", "pink");
@@ -71,7 +84,7 @@ if ($("form").length) {
 
         $("#sign-form").submit(function(e) {
             if (signature.val() == "") {
-                $(".error-msg").css("display", "block");
+                $(".error-msg").val("Please sign, no scrible was recorded.");
                 e.preventDefault();
                 cont.clearRect(0, 0, 300, 100);
                 canvas.css("background-color", "pink");

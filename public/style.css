@@ -33,6 +33,7 @@ h1 {
 }
 h2 {
     font-size: 3vw;
+
     margin: 0;
     margin-top: 10px;
     padding: 0;
@@ -75,27 +76,33 @@ main {
 }
 #petition-msg {
 }
-/* .notice {
+.notice-msg {
     color: grey;
-} */
-.error-msg {
     font-style: italic;
-    display: none;
+}
+.error-msg {
     color: red;
+    font-style: italic;
 }
 #sign-block {
     position: relative;
     margin: auto;
     padding: 10px;
 }
+
+form {
+    text-align: center;
+    margin: auto;
+}
 input {
-    width: 20%;
-    min-width: 90px;
+    display: block;
+    margin: 10px auto;
+    width: 25%;
+    min-width: 100px;
     height: 30px;
     border-radius: 3px;
     padding: 0 10px;
     box-shadow: 0 0 2px #003333;
-    margin: 5px;
     font-size: 16px;
 }
 
@@ -137,6 +144,14 @@ button:hover {
     box-shadow: none;
 }
 
+button a {
+    text-decoration: none;
+}
+
+#edit-form button {
+    display: inline-block;
+}
+
 img {
     background-color: white;
 }
@@ -145,9 +160,11 @@ ul {
     list-style: none;
     font-style: italic;
     font-size: 16px;
+    padding: 0;
 }
 li {
     margin: 4px 0;
+    text-transform: capitalize;
 }
 
 /* footer {

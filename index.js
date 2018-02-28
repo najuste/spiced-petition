@@ -1,6 +1,8 @@
 const db = require("./db");
 const hb = require("express-handlebars");
 var bcrypt = require("bcryptjs");
+var csurf = require("csurf");
+
 const express = require("express");
 
 const app = express();
@@ -17,16 +19,21 @@ app.set("view engine", "handlebars"); // set reserved names
 
 //------ SETTING COOKIES
 var cookieSession = require("cookie-session");
+
 app.use(
     cookieSession({
-        // FIXME: secret
-        secret: "a really hard to guess secret",
-        // TODO: NEXT LINE ONLY FOR TESTING
-        maxAge: 1000 * 60 * 5
-        // maxAge: 1000 * 60 * 60 * 24 * 14
+        secret:
+            process.env.SESSION_SECRET ||
+            require("./secrets.json").cookieSecret,
+        // maxAge: 1000 * 60 * 5
+        maxAge: 1000 * 60 * 60 * 24 * 14
     })
 );
 
+//
+var csrf = csurf();
+
+// OPTIONS FOR MIDDLEWARE
 // const checkLogged = app.use(function(req, res, next) {
 //     if (
 //         req.session.loggedin &&
@@ -50,8 +57,7 @@ app.use(
 app.use(function(req, res, next) {
     if (req.session.loggedin) {
         if (req.url !== "/register" && req.url !== "/login") {
-            //if logged in & not accessing registration or login, let him in
-            next();
+            next(); //if logged in & not accessing registration or login, let him in
         } else {
             res.redirect("/petition");
         }
@@ -67,37 +73,40 @@ app.use(function(req, res, next) {
     }
 });
 
-app.get("/register", function(req, res) {
+app.get("/register", csrf, function(req, res) {
     res.render("register", {
-        layout: "main"
+        layout: "main",
+        csrfToken: req.csrfToken()
     });
 });
 
-app.post("/register", function(req, res) {
+app.post("/register", csrf, function(req, res) {
     let user_id;
     let first = req.body.first;
     let last = req.body.last;
     let email = req.body.email;
+
     hashPassword(req.body.password)
         .then(password => {
-            console.log(req.body.password);
-
-            //check if user already registered /if email exists in db
-
             return db.register(first, last, email, password).then(results => {
-                console.log(
-                    "Registering user, getting his id",
-                    results.rows[0].id
-                );
                 user_id = results.rows[0].id;
-                req.session.loggedin = { first, last, user_id };
-                res.redirect("/info");
+                return db.storeInfo(user_id).then(() => {
+                    req.session.loggedin = { first, last, email, user_id };
+                    res.redirect("/info");
+                });
             });
         })
         .catch(function(err) {
-            console.log("Error in registration, if no user id: register ", err);
-            if (!user_id) {
+            if (err.code == "23505") {
                 res.render("register", {
+                    error:
+                        "User with an email you just typed in already registered",
+                    layout: "main"
+                });
+            } else {
+                console.log("Some other error in registration", err);
+                res.render("register", {
+                    error: "Undefined error occured, please try again",
                     layout: "main"
                 });
             }
@@ -105,6 +114,9 @@ app.post("/register", function(req, res) {
 });
 
 app.get("/info", function(req, res) {
+    if (req.session.loggedin.info) {
+        res.redirect("/petition/edit");
+    }
     res.render("info", {
         layout: "main",
         first: req.session.loggedin.first,
@@ -113,28 +125,110 @@ app.get("/info", function(req, res) {
 });
 
 app.post("/info", function(req, res) {
+    console.log("We are in the user info part");
     var city = req.body.city;
     var homepage = req.body.homepage;
-    if (!city.length) {
+    if (city.length) {
         console.log("city going to lowercase", city);
         city = city.toLowerCase();
     }
-    if (!homepage.length) {
+    if (homepage.length) {
         console.log("homepage going to lowercase", homepage);
-
         homepage = homepage.toLowerCase();
     }
-    console.log("Checking the city:", city);
-    // FIXME: age empty param as string is not handled when inserting to int
+    req.session.loggedin.info = true;
     db
-        .storeInfo(req.body.age, city, homepage, req.session.loggedin.user_id)
-        .then(results => {
-            console.log("Storing info results", results);
+        .updateInfoById(
+            req.body.age,
+            city,
+            homepage,
+            req.session.loggedin.user_id
+        )
+        .then(() => {
             res.redirect("/petition");
         })
-        .catch(function(err) {
-            console.log("Logging error", err);
-        });
+        .catch(err => console.log(err));
+});
+
+app.get("/petition/edit", function(req, res) {
+    const { first, last, email } = req.session.loggedin;
+    const user_id = req.session.loggedin.user_id;
+    db
+        .getInfoById(user_id)
+        .then(results => {
+            if (results.rows.length) {
+                const { age, city, homepage } = results.rows[0];
+                //populate the form with values
+                const data = { first, last, email, age, city, homepage };
+                res.render("edit", {
+                    layout: "main",
+                    data: data
+                });
+            } else {
+                // FIXME:   //the query was empty, so no input from user
+                res.render("edit", {
+                    layout: "main",
+                    data: req.session.loggedin
+                });
+            }
+        })
+        .catch(err => console.log(err));
+});
+
+app.post("/petition/edit", function(req, res) {
+    const { first, last, email, new_password, age, city, homepage } = req.body;
+    //we run the update query
+
+    if (!new_password) {
+        //no password passed, no need to hash
+        console.log("No password passed");
+        db
+            .updateUserById(first, last, email, req.session.loggedin.user_id)
+            .then(() => {
+                return db
+                    .updateInfoById(
+                        age,
+                        city,
+                        homepage,
+                        req.session.loggedin.user_id
+                    )
+                    .then(results => {
+                        console.log(
+                            "Updating the user_profiles table",
+                            results.rows[0]
+                        );
+                        res.redirect("/petition");
+                    });
+            })
+            .catch(err => console.log(err));
+    } else {
+        //hash password
+        hashPassword(new_password)
+            .then(password => {
+                console.log("Password hashed");
+                return db
+                    .updateUserById_newPass(
+                        first,
+                        last,
+                        email,
+                        password,
+                        req.session.loggedin.user_id
+                    )
+                    .then(() => {
+                        return db
+                            .updateInfoById(
+                                age,
+                                city,
+                                homepage,
+                                req.session.loggedin.user_id
+                            )
+                            .then(() => {
+                                res.redirect("/petition");
+                            });
+                    });
+            })
+            .catch(err => console.log(err));
+    }
 });
 
 app.get("/login", function(req, res) {
@@ -152,66 +246,47 @@ app.post("/login", function(req, res) {
     db
         .getDataByEmail(email)
         .then(results => {
-            console.log(results.rows);
-
             if (!results.rows.length) {
                 res.render("login", {
                     layout: "main",
-                    // TODO: maybe other solution?
                     error: `The email you have entered does not match any client of yours. Please check if you typed it correctly`
                 });
-                console.log("no such email was ever entered");
             } else {
                 results = results.rows[0];
                 return checkPassword(req.body.password, results.password).then(
                     val => {
-                        if (val) {
+                        if (!val) {
+                            res.render("login", {
+                                layout: "main",
+                                error: `The password you have entered does not match the given email. Please check if you typed correctly`
+                            });
+                        } else {
                             req.session.loggedin = {
                                 first: results.first,
                                 last: results.last,
-                                user_id: results.id
+                                email: results.email,
+                                user_id: results.id,
+                                info: true
                             };
-
-                            // check also user has signed
                             db
                                 .getSignId(req.session.loggedin.user_id)
                                 .then(results => {
-                                    console.log(
-                                        "Getting the user_id from signatures",
-                                        results
-                                    );
                                     if (results.rows[0]) {
                                         req.session.loggedin.sign_id =
                                             results.rows[0].id;
-                                        console.log(
-                                            "Got the id inside the cookies",
-                                            req.session.loggedin.sign_id
-                                        );
+                                        res.redirect("/petition/thanks");
                                     }
+                                    res.redirect("/petition");
                                 })
-                                .catch(function(err) {
-                                    console.log("Logging error", err);
-                                });
-
-                            res.redirect("/petition");
-                        } else {
-                            res.render("login", {
-                                layout: "main",
-                                // TODO: maybe other solution?
-                                error: `The password you have entered does not match the given email. Please check if you typed correctly`
-                            });
-                            console.log("log in was not correct");
+                                .catch(err => console.log(err));
                         }
                     }
                 );
             }
         })
-        .catch(function(err) {
-            console.log("Logging error", err);
-        });
+        .catch(err => console.log(err));
 });
 
-//MIDDLEWARE inside checking if not signed yet
 app.get("/petition", function(req, res) {
     if (req.session.loggedin.sign_id) {
         res.redirect("/petition/thanks");
@@ -225,30 +300,26 @@ app.get("/petition", function(req, res) {
 });
 
 app.post("/petition", function(req, res) {
-    let sign = req.body.sign;
-    // updating database
     db
-        .signPetition(sign, req.session.loggedin.user_id)
-        .then(function(results) {
+        .signPetition(req.body.sign, req.session.loggedin.user_id)
+        .then(results => {
+            //FIXME setting a cookie here, but seems does not load in petition
             req.session.loggedin.sign_id = results.rows[0].id;
+            console.log("Setting a cookie once signed:", req.session.loggedin);
             res.redirect("/petition/thanks");
         })
-        .catch(function(err) {
-            console.log(err);
-        });
+        .catch(err => console.log(err));
 });
 
 app.get("/petition/thanks", function(req, res) {
     if (req.session.loggedin.sign_id) {
         //get the id data
-        db
-            .getSignatureById(req.session.loggedin.sign_id)
-            .then(function(results) {
-                res.render("thanks", {
-                    signature: results.rows[0].sign,
-                    layout: "main"
-                });
+        db.getSignatureById(req.session.loggedin.sign_id).then(results => {
+            res.render("thanks", {
+                signature: results.rows[0].sign,
+                layout: "main"
             });
+        });
     } else {
         res.render("petition", {
             layout: "main",
@@ -258,19 +329,27 @@ app.get("/petition/thanks", function(req, res) {
     }
 });
 
+app.get("/cancelpetition", function(req, res) {
+    db
+        .delSignature(req.session.loggedin.user_id)
+        .then(results => {
+            console.log(results.rows);
+            delete req.session.loggedin.sign_id; //updating cookies
+            res.redirect("/petition");
+        })
+        .catch(err => console.log(err));
+});
 app.get("/petition/signers", function(req, res) {
     db
         .getSignees(30) // limiting results
-        .then(function(results) {
+        .then(results => {
             console.log("Getting signers:", results);
             res.render("signees", {
                 data: results.rows,
                 layout: "main"
             });
         })
-        .catch(function(err) {
-            console.log(err);
-        });
+        .catch(err => console.log(err));
 });
 
 app.get("/petition/signers/:city", function(req, res) {
@@ -285,12 +364,10 @@ app.get("/petition/signers/:city", function(req, res) {
                 layout: "main"
             });
         })
-        .catch(function(err) {
-            console.log(err);
-        });
+        .catch(err => console.log(err));
 });
 
-app.listen(8080, () => console.log("I am here for you"));
+app.listen(process.env.PORT || 8080, () => console.log("I am here for you"));
 
 function hashPassword(plainTextPassword) {
     return new Promise(function(resolve, reject) {

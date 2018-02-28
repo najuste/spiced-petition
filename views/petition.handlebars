@@ -12,13 +12,11 @@
     </div>
 
     <div id="sign-block">
-        {{> error}}
+        <div class="error-msg"></div>
         <form id="sign-form" method="POST">
-
-            <!-- show the name -->
             <h4><em>{{first}} {{last}}</em></h4>
 
-            <p class="notice">please sign bellow:</p>
+            <p class="notice-msg">please sign bellow:</p>
             <input type="hidden" name="sign" id="input-canvas" >
             <canvas id="canvas" width ="300" height="100"></canvas>
             <button>Sign</button>

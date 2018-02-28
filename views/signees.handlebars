@@ -2,12 +2,11 @@
 
 <h3>Check the last signatures on board
     {{#if req_city}}
-    in {{req_city}}
+    in <strong>{{req_city}}</strong>
     {{/if}}
 </h3>
 
 <h3>Already <strong>{{data.length}}</strong> signed!</h3>
-
     <ul>
         {{#each data}}
         <li>
@@ -18,13 +17,12 @@
             {{#if age}}
              ( {{age}}
              <!-- unless seems not working... :/ -->
-            {{#unless req_city}}
+            {{#unless ../req_city}}
                 {{#if city}},
                     <a href="/petition/signers/{{city}}">{{city}}</a>
-                {{/if}})
+                {{/if}}
             {{/unless}}
-
-
+            )
             {{/if}}
         </li>
         {{/each}}

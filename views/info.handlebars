@@ -1,14 +1,13 @@
+<div class="page">
+    <div class="desc">
+        <p>Let me know a bit more about yourself! I'd be grateful if you could fill this form.
+        Not obligatory though.</p>
 
-<div class="desc">
-    Let me know a bit more about yourself! I'd be grateful if you could fill this form.
-    Not obligatory though.
-</div>
+    </div>
 <div id="info-block">
-    {{> error}}
     <form id="info-form" method="POST">
-
-        <!-- show the name -->
-        <h4><em>{{first}} {{last}}</em></h4>
+        <!-- show me the name -->
+        <h4><em>{{first}} {{last}}</em></h4><p>please share with us:</p>
 
         <input type="text" name="age" placeholder="Age">
         <input type="text" name="city" placeholder="City">
@@ -16,4 +15,5 @@
 
         <button>Continue</button>
     </form>
+</div>
 </div>
