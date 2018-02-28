@@ -33,27 +33,6 @@ app.use(
 //
 var csrf = csurf();
 
-// OPTIONS FOR MIDDLEWARE
-// const checkLogged = app.use(function(req, res, next) {
-//     if (
-//         req.session.loggedin &&
-//         req.url !== "/register" &&
-//         req.url !== "/login"
-//     ) {
-//         next();
-//     } else {
-//         res.redirect("/register");
-//     }
-// });
-
-// const checkSigned = app.use(function(req, res, next) {
-//     if (req.session.signId) {
-//         res.redirect("/thanks");
-//     } else {
-//         next();
-//     }
-// });
-
 app.use(function(req, res, next) {
     if (req.session.loggedin) {
         if (req.url !== "/register" && req.url !== "/login") {
@@ -116,21 +95,23 @@ app.post("/register", csrf, function(req, res) {
         });
 });
 
-app.get("/info", function(req, res) {
+app.get("/info", csrf, function(req, res) {
     if (req.session.loggedin.info) {
         res.redirect("/petition/edit");
     }
+
     res.render("info", {
         layout: "main",
+        csrfToken: req.csrfToken(),
         first: req.session.loggedin.first,
         last: req.session.loggedin.last
     });
 });
 
-app.post("/info", function(req, res) {
-    console.log("We are in the user info part");
+app.post("/info", csrf, function(req, res) {
     var city = req.body.city;
     var homepage = req.body.homepage;
+    // FIXME: check if submited age is an integer
     if (city.length) {
         console.log("city going to lowercase", city);
         city = city.toLowerCase();
@@ -150,10 +131,13 @@ app.post("/info", function(req, res) {
         .then(() => {
             res.redirect("/petition");
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err);
+            res.redirect("/edit");
+        });
 });
 
-app.get("/petition/edit", function(req, res) {
+app.get("/petition/edit", csrf, function(req, res) {
     const { first, last, email } = req.session.loggedin;
     const user_id = req.session.loggedin.user_id;
     db
@@ -165,12 +149,14 @@ app.get("/petition/edit", function(req, res) {
                 const data = { first, last, email, age, city, homepage };
                 res.render("edit", {
                     layout: "main",
+                    csrfToken: req.csrfToken(),
                     data: data
                 });
             } else {
                 // FIXME:   //the query was empty, so no input from user
                 res.render("edit", {
                     layout: "main",
+                    csrfToken: req.csrfToken(),
                     data: req.session.loggedin
                 });
             }
@@ -178,7 +164,7 @@ app.get("/petition/edit", function(req, res) {
         .catch(err => console.log(err));
 });
 
-app.post("/petition/edit", function(req, res) {
+app.post("/petition/edit", csrf, function(req, res) {
     const { first, last, email, new_password, age, city, homepage } = req.body;
     //we run the update query
 
@@ -234,17 +220,18 @@ app.post("/petition/edit", function(req, res) {
     }
 });
 
-app.get("/login", function(req, res) {
+app.get("/login", csrf, function(req, res) {
     if (req.session.loggedin) {
         res.redirect("/petition");
     } else {
         res.render("login", {
-            layout: "main"
+            layout: "main",
+            csrfToken: req.csrfToken()
         });
     }
 });
 
-app.post("/login", function(req, res) {
+app.post("/login", csrf, function(req, res) {
     let email = req.body.email;
     db
         .getDataByEmail(email)
@@ -306,9 +293,7 @@ app.post("/petition", function(req, res) {
     db
         .signPetition(req.body.sign, req.session.loggedin.user_id)
         .then(results => {
-            //FIXME setting a cookie here, but seems does not load in petition
             req.session.loggedin.sign_id = results.rows[0].id;
-            console.log("Setting a cookie once signed:", req.session.loggedin);
             res.redirect("/petition/thanks");
         })
         .catch(err => console.log(err));
@@ -316,7 +301,6 @@ app.post("/petition", function(req, res) {
 
 app.get("/petition/thanks", function(req, res) {
     if (req.session.loggedin.sign_id) {
-        //get the id data
         db.getSignatureById(req.session.loggedin.sign_id).then(results => {
             res.render("thanks", {
                 signature: results.rows[0].sign,

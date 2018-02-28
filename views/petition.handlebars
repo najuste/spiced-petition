@@ -7,7 +7,7 @@
             <li>It is kept in secret how the underlying technologies work and what can be inferred from an individual’s location,
             especially if recorded over longer periods of time.
         </ul></h4>
-        <h3><em>Let'c call for more transparency in geoprivacy!!!</em></h3>
+        <h3><em>Let's call for more transparency in geoprivacy!!!</em></h3>
         <p><em>For more information check <a href="http://grantmckenzie.com/academics/GeoprivacyManifesto2017.pdf" alt="geoprivacy manifesto"> GEOPRIVACY MANIFESTO </a></em><p>
     </div>
 
@@ -15,14 +15,15 @@
         <div class="error-msg"></div>
         <form id="sign-form" method="POST">
             <h4><em>{{first}} {{last}}</em></h4>
-
             <p class="notice-msg">please sign bellow:</p>
             <input type="hidden" name="sign" id="input-canvas" >
             <canvas id="canvas" width ="300" height="100"></canvas>
-            <button>Sign</button>
-            <button id="clear-canvas">Cancel</button>
-
+            <button type="submit" id="sign-canvas">Sign</button>
+            <button type="reset" id="clear-canvas">Clear</button>
+        </div>
         </form>
-    </div>
+
+
+
 
 </div>

@@ -3,14 +3,10 @@ if ($("#start-page").length) {
     $("h1").css("opacity", "0");
     $("h1")
         .delay(1000)
-        .animate({ opacity: 1 }, 3000);
-}
-/// canvas
-if ($("button#clear-canvas").length) {
+        .animate({ opacity: 1 }, 2000);
 }
 
 //---- /register
-
 if ($("form").length) {
     var first = $("input[name='first']");
     var last = $("input[name='last']");
@@ -20,8 +16,6 @@ if ($("form").length) {
     var signature = $("#input-canvas");
 
     $("#register-form").submit(function(e) {
-        console.log("In register form");
-
         if (
             first.val() == "" ||
             last.val() == "" ||
@@ -38,7 +32,6 @@ if ($("form").length) {
             email.css("background-color", "pink");
             password.css("background-color", "pink");
         } else if (email.val().indexOf("@") < 0) {
-            // FIXME: message was not appearing
             $("#sign-block .error-msg").html(
                 `The email you typed is not valid`
             );
@@ -64,13 +57,13 @@ if ($("form").length) {
     //---- /petition
     if ($("#canvas").length) {
         var canvas = $("#canvas");
-        //var cont = canvas[0].getContext("2d");
         var cont = document.getElementById("canvas").getContext("2d");
 
         cont.strokeStyle = "grey";
         cont.lineWidth = 1;
 
         canvas.on("mousedown", function(e) {
+            canvas.css("background-color", "white");
             cont.beginPath();
             cont.moveTo(e.offsetX, e.offsetY);
             canvas.on("mousemove", function(e) {
@@ -91,6 +84,12 @@ if ($("form").length) {
                 cont.clearRect(0, 0, 300, 100);
                 canvas.css("background-color", "pink");
             }
+        });
+        /// clearing canvas on cancel button
+        $("button#clear-canvas").on("click", function() {
+            console.log("cleared");
+            cont.clearRect(0, 0, 300, 100);
+            canvas.css("background-color", "white");
         });
     }
 }

@@ -6,14 +6,12 @@ function getLatLon() {
     // do something
     return new Promise(function(resolve, reject) {
         $.get(
-            "http://ipinfo.io",
+            "https://ipinfo.io",
             function(response) {
                 console.log("Made a ping!");
                 if (!response.loc) {
                     var location = response.city;
-                    console.log("Got only location", location);
-                    // FIXME:
-
+                    // FIXME: no fly in, have to extract the location
                     reject("no coordinates provided, got just city");
                 } else {
                     location = response.loc;
@@ -32,12 +30,10 @@ if ($("#start-page").length) {
 
     getLatLon()
         .then(results => {
-            console.log(results);
             var [lat, lon] = results;
-
             setTimeout(function() {
                 map.flyTo(new L.LatLng(lat, lon), 12);
-            }, 3000);
+            }, 2000);
         })
         .catch(function(error) {
             console.log(error.message);
@@ -46,7 +42,7 @@ if ($("#start-page").length) {
     getLatLon()
         .then(results => {
             var [lat, lon] = results;
-            initMap([lat, lon], 14);
+            initMap([lat, lon], 12);
         })
         .catch(function(error) {
             console.log(error.message);

@@ -3,6 +3,7 @@
         <div class="error-msg"></div>
         <p style="color:red;font-size:20px">{{error}}</p>
         <form id="login-form" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="text" name="email" placeholder="Email">
             <input type="password" name="password" placeholder="Password">
             <button>Log in</button>
