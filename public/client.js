@@ -6,6 +6,8 @@ if ($("#start-page").length) {
         .animate({ opacity: 1 }, 3000);
 }
 /// canvas
+if ($("button#clear-canvas").length) {
+}
 
 //---- /register
 
