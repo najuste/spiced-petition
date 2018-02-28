@@ -145,6 +145,7 @@ app.get("/petition/edit", csrf, function(req, res) {
         .then(results => {
             if (results.rows.length) {
                 const { age, city, homepage } = results.rows[0];
+                console.log(city);
                 //populate the form with values
                 const data = { first, last, email, age, city, homepage };
                 res.render("edit", {
