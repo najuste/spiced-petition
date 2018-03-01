@@ -1,4 +1,4 @@
-//on the first page init the general map and call the zoom
+//on the first page init the general map and call the zoom, and then use the lat lon to lay the map of registered
 var map;
 var lat, lon;
 
@@ -47,18 +47,19 @@ if ($("#start-page").length) {
         .catch(function(error) {
             console.log(error.message);
         });
-    console.log("If not start page, do we know the lat and lon", lat, lon);
+    //console.log("If not start page, do we know the lat and lon", lat, lon);
 }
 
 function initMap(coor, z) {
     map = L.map("map", { zoomControl: false }).setView(coor, z);
 
     // get the stamen toner-lite tiles
+    // FIXME: console log error: http to HTTPS
     var Stamen_Toner = L.tileLayer(
-        "http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}",
+        "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}",
         {
             attribution:
-                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> — Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                'Map tiles by <a href="https://stamen.com">Stamen Design</a>, <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> — Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: "abcd",
             minZoom: 0,
             maxZoom: 20,
@@ -79,7 +80,7 @@ function setMapRect() {
         .height($(window).height() - 100)
         .width($(window).width());
     map.invalidateSize();
-    console.log("window size:", $(window).height(), $(window).width());
+    //console.log("window size:", $(window).height(), $(window).width());
 }
 
 // TODO:

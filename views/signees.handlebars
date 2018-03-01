@@ -16,15 +16,26 @@
             {{/if}}
             {{#if age}}
              ( {{age}}
-             <!-- unless seems not working... :/ -->
-            {{#unless ../req_city}}
-                {{#if city}},
-                    <a href="/petition/signers/{{city}}">{{city}}</a>
-                {{/if}}
-            {{/unless}}
+
+                {{#unless ../req_city}}
+
+                    {{#if city}},
+                        <a href="/petition/signers/{{city}}">{{city}}</a>
+                    {{/if}}
+                {{/unless}}
             )
+            {{else}}
+                ({{#unless ../req_city}}
+
+                    {{#if city}}
+                        <a href="/petition/signers/{{city}}">{{city}}</a>
+                    {{/if}}
+                {{/unless}})
             {{/if}}
+
         </li>
         {{/each}}
     </ul>
+
+
 </div>

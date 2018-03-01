@@ -14,6 +14,7 @@ app.use(
         extended: false
     })
 );
+
 app.engine("handlebars", hb());
 app.set("view engine", "handlebars"); // set reserved names
 
@@ -51,7 +52,7 @@ app.use(function(req, res, next) {
         }
     }
 });
-app.get("/", function(req, res) {
+app.get("/", csrf, function(req, res) {
     res.redirect("/register");
 });
 
@@ -81,13 +82,14 @@ app.post("/register", csrf, function(req, res) {
         .catch(function(err) {
             if (err.code == "23505") {
                 res.render("register", {
+                    csrfToken: req.csrfToken(),
                     error:
                         "User with an email you just typed in already registered",
                     layout: "main"
                 });
             } else {
-                console.log("Some other error in registration", err);
                 res.render("register", {
+                    csrfToken: req.csrfToken(),
                     error: "Undefined error occured, please try again",
                     layout: "main"
                 });
@@ -109,17 +111,9 @@ app.get("/info", csrf, function(req, res) {
 });
 
 app.post("/info", csrf, function(req, res) {
-    var city = req.body.city;
-    var homepage = req.body.homepage;
-    // FIXME: check if submited age is an integer
-    if (city.length) {
-        console.log("city going to lowercase", city);
-        city = city.toLowerCase();
-    }
-    if (homepage.length) {
-        console.log("homepage going to lowercase", homepage);
-        homepage = homepage.toLowerCase();
-    }
+    let city = city.toLowerCase();
+    let homepage = homepage.req.body.homepage;
+
     req.session.loggedin.info = true;
     db
         .updateInfoById(
@@ -133,7 +127,7 @@ app.post("/info", csrf, function(req, res) {
         })
         .catch(err => {
             console.log(err);
-            res.redirect("/edit");
+            res.redirect("/petition/edit");
         });
 });
 
@@ -145,7 +139,6 @@ app.get("/petition/edit", csrf, function(req, res) {
         .then(results => {
             if (results.rows.length) {
                 const { age, city, homepage } = results.rows[0];
-                console.log(city);
                 //populate the form with values
                 const data = { first, last, email, age, city, homepage };
                 res.render("edit", {
@@ -166,12 +159,12 @@ app.get("/petition/edit", csrf, function(req, res) {
 });
 
 app.post("/petition/edit", csrf, function(req, res) {
-    const { first, last, email, new_password, age, city, homepage } = req.body;
-    //we run the update query
+    var { first, last, email, new_password, age, city, homepage } = req.body;
+    city = city.toLowerCase();
 
     if (!new_password) {
         //no password passed, no need to hash
-        console.log("No password passed");
+
         db
             .updateUserById(first, last, email, req.session.loggedin.user_id)
             .then(() => {
@@ -182,11 +175,7 @@ app.post("/petition/edit", csrf, function(req, res) {
                         homepage,
                         req.session.loggedin.user_id
                     )
-                    .then(results => {
-                        console.log(
-                            "Updating the user_profiles table",
-                            results.rows[0]
-                        );
+                    .then(() => {
                         res.redirect("/petition");
                     });
             })
@@ -195,7 +184,6 @@ app.post("/petition/edit", csrf, function(req, res) {
         //hash password
         hashPassword(new_password)
             .then(password => {
-                console.log("Password hashed");
                 return db
                     .updateUserById_newPass(
                         first,
@@ -320,8 +308,7 @@ app.get("/petition/thanks", function(req, res) {
 app.get("/cancelpetition", function(req, res) {
     db
         .delSignature(req.session.loggedin.user_id)
-        .then(results => {
-            console.log(results.rows);
+        .then(() => {
             delete req.session.loggedin.sign_id; //updating cookies
             res.redirect("/petition");
         })
@@ -331,7 +318,6 @@ app.get("/petition/signers", function(req, res) {
     db
         .getSignees(30) // limiting results
         .then(results => {
-            console.log("Getting signers:", results);
             res.render("signees", {
                 data: results.rows,
                 layout: "main"
@@ -341,11 +327,9 @@ app.get("/petition/signers", function(req, res) {
 });
 
 app.get("/petition/signers/:city", function(req, res) {
-    console.log("logging the city", req.params.city);
     db
         .getSigneesByCity(req.params.city, 30) // limiting results
-        .then(function(results) {
-            console.log("Getting signers in the city:", results.rows[0]);
+        .then(results => {
             res.render("signees", {
                 req_city: req.params.city,
                 data: results.rows,
@@ -355,7 +339,7 @@ app.get("/petition/signers/:city", function(req, res) {
         .catch(err => console.log(err));
 });
 
-app.listen(process.env.PORT || 8080, () => console.log("I am here for you"));
+app.listen(process.env.PORT || 8080, () => console.log("Nieko tokio"));
 
 function hashPassword(plainTextPassword) {
     return new Promise(function(resolve, reject) {

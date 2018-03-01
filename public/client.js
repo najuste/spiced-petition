@@ -1,4 +1,4 @@
-///
+// ---- start page animation
 if ($("#start-page").length) {
     $("h1").css("opacity", "0");
     $("h1")
@@ -6,7 +6,7 @@ if ($("#start-page").length) {
         .animate({ opacity: 1 }, 2000);
 }
 
-//---- /register
+//---- register
 if ($("form").length) {
     var first = $("input[name='first']");
     var last = $("input[name='last']");
@@ -31,17 +31,11 @@ if ($("form").length) {
             last.css("background", "pink");
             email.css("background-color", "pink");
             password.css("background-color", "pink");
-        } else if (email.val().indexOf("@") < 0) {
-            $("#sign-block .error-msg").html(
-                `The email you typed is not valid`
-            );
-            e.preventDefault();
-            email.css("background-color", "pink");
+            //doing an email check
         }
     });
 
     //---- /login
-
     $("#login-form").submit(function(e) {
         if (email.val() == "" || password.val() == "") {
             $(".error-msg").val(
@@ -77,15 +71,38 @@ if ($("form").length) {
             $("#input-canvas").val(dataURL);
         });
 
+        // on phone
+
+        var canvasOffset = canvas.offset();
+        var x, y;
+
+        canvas.on("touchstart", function(e) {
+            canvas.css("background-color", "white");
+            e.preventDefault();
+            cont.beginPath();
+            x = e.touches[0].pageX - canvasOffset.left;
+            y = e.touches[0].pageY - canvasOffset.top;
+            cont.moveTo(x, y);
+        });
+        canvas.on("touchmove", function(e) {
+            e.preventDefault();
+            x = e.touches[0].pageX - canvasOffset.left;
+            y = e.touches[0].pageY - canvasOffset.top;
+            cont.lineTo(x, y);
+            cont.stroke();
+
+            const dataURL = document.getElementById("canvas").toDataURL();
+            $("#input-canvas").val(dataURL);
+        });
+
         $("#sign-form").submit(function(e) {
             if (signature.val() == "") {
-                $(".error-msg").val("Please sign, no scrible was recorded.");
+                $(".error-msg").val("Please sign, nothing on canvas :/");
                 e.preventDefault();
                 cont.clearRect(0, 0, 300, 100);
                 canvas.css("background-color", "pink");
             }
         });
-        /// clearing canvas on cancel button
         $("button#clear-canvas").on("click", function() {
             console.log("cleared");
             cont.clearRect(0, 0, 300, 100);

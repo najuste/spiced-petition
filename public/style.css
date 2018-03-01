@@ -7,12 +7,14 @@ body {
     color: #003333;
     height: calc(100% - 250px);
     height: -o-calc(100% - 65px); /* opera */
-    height: -webkit-calc(100% - 65px); /* google, safari */
+    height: -webkit-calc(100% - 65px); /* google, safari*/
     height: -moz-calc(100% - 65px); /* firefox */
 }
+
 a {
     color: inherit;
 }
+
 a:visited {
     text-decoration: inherit;
 }
@@ -32,25 +34,13 @@ h1 {
     margin-top: 10px;
 }
 h2 {
-    font-size: 3vw;
+    font-size: 3.5vw;
 
     margin: 0;
     margin-top: 10px;
     padding: 0;
 }
-@media screen and (max-width: 500px) {
-    h1 {
-        font-size: 25px;
-        margin-top: 5px;
-    }
-    h2 {
-        font-size: 20px;
-        margin-top: 5px;
-    }
-    h3 {
-        font-size: 18px;
-    }
-}
+
 /* header > h1 {
     margin-top: 0;
     padding-top: 50px;
@@ -110,7 +100,7 @@ input {
     display: block;
     margin: 10px auto;
     width: 25%;
-    min-width: 100px;
+    min-width: 200px;
     height: 30px;
     border-radius: 3px;
     padding: 0 10px;
@@ -177,6 +167,7 @@ ul {
 }
 li {
     margin: 4px 0;
+    padding-top: 10px;
 }
 .signees li {
     text-transform: capitalize;
@@ -187,3 +178,91 @@ li {
     top: 0;
     height: 300px;
 } */
+
+@media (max-width: 500px) {
+    h1 {
+        font-size: 32px;
+    }
+    h2 {
+        font-size: 25px;
+    }
+    .page {
+        width: 80%;
+    }
+
+    input {
+        display: block;
+        margin: 10px auto;
+        width: 25%;
+        min-width: 200px;
+        height: 30px;
+        border-radius: 3px;
+        padding: 0 10px;
+        box-shadow: 0 0 2px #003333;
+        font-size: 16px;
+    }
+
+    input:hover {
+        cursor: text;
+        box-shadow: none;
+    }
+
+    #canvas {
+        background-color: white;
+        display: block;
+        margin: 20px auto;
+        /* width: 50%;
+        min-width: 200px;
+        height: 100px; */
+        box-shadow: 0 0 2px #003333;
+    }
+
+    #canvas:hover {
+        cursor: text;
+        box-shadow: none;
+    }
+
+    button {
+        display: inline-block;
+        margin: 20px auto;
+        background-color: #ffd27f;
+        height: 30px;
+        border-radius: 3px;
+        border: 1px solid grey;
+        width: 80px;
+        font-size: 16px;
+        box-shadow: 0 0 2px #003333;
+    }
+
+    button:hover {
+        cursor: pointer;
+        background-color: orange;
+        box-shadow: none;
+    }
+
+    button a {
+        text-decoration: none;
+    }
+
+    /* #edit-form button,
+    #sign-form button {
+        display: inline-block;
+    } */
+
+    img {
+        background-color: white;
+    }
+
+    ul {
+        list-style: none;
+        font-style: italic;
+        font-size: 16px;
+        padding: 0;
+    }
+    li {
+        margin: 4px 0;
+    }
+    .signees li {
+        text-transform: capitalize;
+    }
+}
