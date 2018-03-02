@@ -1,4 +1,6 @@
 const db = require("./db");
+const cache = require("./redismodule");
+
 const hb = require("express-handlebars");
 var bcrypt = require("bcryptjs");
 var csurf = require("csurf");
@@ -72,6 +74,7 @@ app.post("/register", csrf, function(req, res) {
     hashPassword(req.body.password)
         .then(password => {
             return db.register(first, last, email, password).then(results => {
+                cache.del("cachedsigners");
                 user_id = results.rows[0].id;
                 return db.storeInfo(user_id).then(() => {
                     req.session.loggedin = { first, last, email, user_id };
@@ -147,7 +150,6 @@ app.get("/petition/edit", csrf, function(req, res) {
                     data: data
                 });
             } else {
-                // FIXME:   //the query was empty, so no input from user
                 res.render("edit", {
                     layout: "main",
                     csrfToken: req.csrfToken(),
@@ -161,10 +163,10 @@ app.get("/petition/edit", csrf, function(req, res) {
 app.post("/petition/edit", csrf, function(req, res) {
     var { first, last, email, new_password, age, city, homepage } = req.body;
     city = city.toLowerCase();
+    cache.del("cachedsigners");
 
     if (!new_password) {
         //no password passed, no need to hash
-
         db
             .updateUserById(first, last, email, req.session.loggedin.user_id)
             .then(() => {
@@ -247,17 +249,23 @@ app.post("/login", csrf, function(req, res) {
                                 user_id: results.id,
                                 info: true
                             };
-                            db
-                                .getSignId(req.session.loggedin.user_id)
-                                .then(results => {
-                                    if (results.rows[0]) {
-                                        req.session.loggedin.sign_id =
-                                            results.rows[0].id;
-                                        res.redirect("/petition/thanks");
-                                    }
-                                    res.redirect("/petition");
-                                })
-                                .catch(err => console.log(err));
+                            // FIXME: TEST THIS. Only if is added(!)
+                            console.log(req.session.loggedin);
+                            if ("sign_id" in req.session.loggedin) {
+                                res.redirect("/petition/thanks");
+                            } else {
+                                db
+                                    .getSignId(req.session.loggedin.user_id)
+                                    .then(results => {
+                                        if (results.rows[0]) {
+                                            req.session.loggedin.sign_id =
+                                                results.rows[0].id;
+                                            res.redirect("/petition/thanks");
+                                        }
+                                        res.redirect("/petition");
+                                    })
+                                    .catch(err => console.log(err));
+                            }
                         }
                     }
                 );
@@ -283,6 +291,7 @@ app.post("/petition", function(req, res) {
         .signPetition(req.body.sign, req.session.loggedin.user_id)
         .then(results => {
             req.session.loggedin.sign_id = results.rows[0].id;
+            cache.del("cachedsigners");
             res.redirect("/petition/thanks");
         })
         .catch(err => console.log(err));
@@ -309,19 +318,43 @@ app.get("/cancelpetition", function(req, res) {
     db
         .delSignature(req.session.loggedin.user_id)
         .then(() => {
+            cache.del("cachedsigners"); //updating cache
             delete req.session.loggedin.sign_id; //updating cookies
             res.redirect("/petition");
         })
         .catch(err => console.log(err));
 });
+
 app.get("/petition/signers", function(req, res) {
-    db
-        .getSignees(30) // limiting results
-        .then(results => {
-            res.render("signees", {
-                data: results.rows,
-                layout: "main"
-            });
+    //redis check if there is a list of signers if not populate with
+    cache
+        .get("cachedsigners")
+        .then(cached => {
+            console.log("Logging results from cache", cached);
+
+            if (!cached) {
+                db
+                    .getSignees(30) // limiting results
+                    .then(results => {
+                        //setting results to cache
+                        cache.setex(
+                            "cachedsigners",
+                            60 * 60 * 24 * 14,
+                            results.rows
+                        );
+                        res.render("signees", {
+                            data: results.rows,
+                            layout: "main"
+                        });
+                    })
+                    .catch(err => console.log(err));
+            } else {
+                //
+                res.render("signees", {
+                    data: cached,
+                    layout: "main"
+                });
+            }
         })
         .catch(err => console.log(err));
 });
