@@ -1,9 +1,8 @@
 // ---- start page animation
 if ($("#start-page").length) {
-    $("h1").css("opacity", "0");
-    $("h1")
-        .delay(1000)
-        .animate({ opacity: 1 }, 2000);
+    let h1 = $("h1");
+    h1.css("opacity", "0.01");
+    h1.delay(1000).animate({ opacity: 1 }, 3000);
 }
 
 //---- register

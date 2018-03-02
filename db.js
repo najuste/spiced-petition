@@ -10,7 +10,6 @@ var db = spicedPg(
 );
 
 // INSERT NEW DATA
-
 exports.register = function(firstname, lastname, email, hash) {
     return db.query(
         `INSERT INTO users (first, last, email, password) VALUES($1, $2, $3, $4) RETURNING id`,
