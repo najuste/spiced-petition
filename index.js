@@ -1,6 +1,4 @@
 const db = require("./db");
-const cache = require("./redismodule");
-
 const hb = require("express-handlebars");
 var bcrypt = require("bcryptjs");
 var csurf = require("csurf");
@@ -8,21 +6,6 @@ var csurf = require("csurf");
 const express = require("express");
 
 const app = express();
-
-// //// tests
-//
-// cache
-//     .setex(
-//         "goodstuff",
-//         5,
-//         JSON.stringify({
-//             good: "day",
-//             great: "evening"
-//         })
-//     )
-//     .then(() => cache.get("goodstuff").then(res => console.log(res)));
-//
-// ////
 
 app.use(express.static(__dirname + "/public"));
 
@@ -43,6 +26,7 @@ app.use(
         secret:
             process.env.SESSION_SECRET ||
             require("./secrets.json").cookieSecret,
+        // maxAge: 1000 * 60 * 5
         maxAge: 1000 * 60 * 60 * 24 * 14
     })
 );
@@ -127,8 +111,8 @@ app.get("/info", csrf, function(req, res) {
 });
 
 app.post("/info", csrf, function(req, res) {
-    let city = req.body.city.toLowerCase();
-    let homepage = req.body.homepage;
+    let city = city.toLowerCase();
+    let homepage = homepage.req.body.homepage;
 
     req.session.loggedin.info = true;
     db
@@ -331,6 +315,8 @@ app.get("/cancelpetition", function(req, res) {
         .catch(err => console.log(err));
 });
 app.get("/petition/signers", function(req, res) {
+    //redis check if there is a list of signers if not populate with
+
     db
         .getSignees(30) // limiting results
         .then(results => {
