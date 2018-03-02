@@ -230,16 +230,54 @@ app.post("/login", csrf, function(req, res) {
             if (!results.rows.length) {
                 res.render("login", {
                     layout: "main",
-                    error: `The email you have entered does not match any client of yours. Please check if you typed it correctly`
+                    error: `The email you have entered does not match any client of yours. Please check if you typed it correctly`,
+                    csrfToken: req.csrfToken()
                 });
             } else {
                 results = results.rows[0];
                 return checkPassword(req.body.password, results.password).then(
                     val => {
                         if (!val) {
-                            res.render("login", {
-                                layout: "main",
-                                error: `The password you have entered does not match the given email. Please check if you typed correctly`
+                            cache.get("passnot").then(wrongTimes => {
+                                if (!wrongTimes) {
+                                    cache.setex("passnot", 60, 1); //setting the first
+                                    console.log("1st wrong attempt");
+                                    res.render("login", {
+                                        layout: "main",
+                                        error: `The password you have entered does not match the given email. Please check if you've typed it correctly`,
+                                        csrfToken: req.csrfToken()
+                                    });
+                                } else {
+                                    //check how many times already...
+                                    if (wrongTimes < 2) {
+                                        cache.setex(
+                                            "passnot",
+                                            10000000,
+                                            wrongTimes + 1
+                                        );
+                                        console.log("Another wrong attempt");
+                                        res.render("login", {
+                                            layout: "main",
+                                            error: `It's {{wrongTimes}} times, you have entered your password wrong. Please wait`,
+                                            csrfToken: req.csrfToken()
+                                        });
+                                    } else {
+                                        console.log("You shall not pass, 5s");
+                                        cache.setex(
+                                            "passnot",
+                                            10000000,
+                                            wrongTimes + 1
+                                        );
+                                        //FIXME show the messeage without rendering?? and delay rendering or do redirect?
+                                        setTimeout(function() {
+                                            res.render("login", {
+                                                layout: "main",
+                                                error: `It's {{wrongTimes}} times, you have entered your password wrong. Please wait 90 seconds to attempt another login`,
+                                                csrfToken: req.csrfToken()
+                                            });
+                                        }, 1000 * 5);
+                                    }
+                                }
                             });
                         } else {
                             req.session.loggedin = {
@@ -331,9 +369,8 @@ app.get("/petition/signers", function(req, res) {
     cache
         .get("cachedsigners")
         .then(cachedResults => {
-            console.log("Logging results from cache", cachedResults);
-
             if (!cachedResults) {
+                console.log("No cached results, query DB");
                 db
                     .getSignees(30) // limiting results
                     .then(results => {
@@ -343,10 +380,6 @@ app.get("/petition/signers", function(req, res) {
                             60 * 60 * 24 * 14,
                             results.rows
                         );
-                        console.log(
-                            "checking the results just after the db query",
-                            results.rows
-                        );
                         res.render("signees", {
                             data: results.rows, // saving an array of objects
                             layout: "main"
@@ -354,7 +387,7 @@ app.get("/petition/signers", function(req, res) {
                     })
                     .catch(err => console.log(err));
             } else {
-                //
+                console.log("Logging results from cache");
                 res.render("signees", {
                     data: cachedResults,
                     layout: "main"
