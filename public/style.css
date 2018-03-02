@@ -180,8 +180,8 @@ li {
 } */
 
 @media (max-width: 500px) {
-    #petition-msg {
-        margin-top: 20px;
+    .page {
+        margin-top: 30px;
     }
     header {
         padding: 10px;
@@ -193,8 +193,8 @@ li {
     h2 {
         font-size: 25px;
     }
-    h4 {
-        margin: 5px 0;
+    h3 {
+        margin: 10px 0;
         font-size: 16px;
     }
     .page {
@@ -202,7 +202,7 @@ li {
     }
     p {
         font-size: 13px;
-        margin: 5px 0;
+        margin: 10px 0;
     }
 
     input {
