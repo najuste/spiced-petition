@@ -327,12 +327,13 @@ app.get("/cancelpetition", function(req, res) {
 
 app.get("/petition/signers", function(req, res) {
     //redis check if there is a list of signers if not populate with
+    // cache.del("cachedsigners");
     cache
         .get("cachedsigners")
-        .then(cached => {
-            console.log("Logging results from cache", cached);
+        .then(cachedResults => {
+            console.log("Logging results from cache", cachedResults);
 
-            if (!cached) {
+            if (!cachedResults) {
                 db
                     .getSignees(30) // limiting results
                     .then(results => {
@@ -342,8 +343,12 @@ app.get("/petition/signers", function(req, res) {
                             60 * 60 * 24 * 14,
                             results.rows
                         );
+                        console.log(
+                            "checking the results just after the db query",
+                            results.rows
+                        );
                         res.render("signees", {
-                            data: results.rows,
+                            data: results.rows, // saving an array of objects
                             layout: "main"
                         });
                     })
@@ -351,7 +356,7 @@ app.get("/petition/signers", function(req, res) {
             } else {
                 //
                 res.render("signees", {
-                    data: cached,
+                    data: cachedResults,
                     layout: "main"
                 });
             }
