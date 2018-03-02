@@ -180,86 +180,65 @@ li {
 } */
 
 @media (max-width: 500px) {
+    #petition-msg {
+        margin-top: 20px;
+    }
+    header {
+        padding: 10px;
+    }
+
     h1 {
-        font-size: 32px;
+        font-size: 8vw;
     }
     h2 {
         font-size: 25px;
     }
+    h4 {
+        margin: 5px 0;
+        font-size: 16px;
+    }
     .page {
         width: 80%;
     }
-
-    input {
-        display: block;
-        margin: 10px auto;
-        width: 25%;
-        min-width: 200px;
-        height: 30px;
-        border-radius: 3px;
-        padding: 0 10px;
-        box-shadow: 0 0 2px #003333;
-        font-size: 16px;
+    p {
+        font-size: 13px;
+        margin: 5px 0;
     }
 
-    input:hover {
-        cursor: text;
-        box-shadow: none;
+    input {
+        margin: 6px auto;
+        width: 80%;
+        height: 30px;
+        padding: 0 6px;
+        font-size: 14px;
+    }
+
+    button {
+        margin: 10px auto;
+        height: 20px;
+        width: 80px;
+        font-size: 14px;
     }
 
     #canvas {
         background-color: white;
         display: block;
         margin: 20px auto;
-        /* width: 50%;
-        min-width: 200px;
-        height: 100px; */
         box-shadow: 0 0 2px #003333;
-    }
-
-    #canvas:hover {
-        cursor: text;
-        box-shadow: none;
-    }
-
-    button {
-        display: inline-block;
-        margin: 20px auto;
-        background-color: #ffd27f;
-        height: 30px;
-        border-radius: 3px;
-        border: 1px solid grey;
-        width: 80px;
-        font-size: 16px;
-        box-shadow: 0 0 2px #003333;
-    }
-
-    button:hover {
-        cursor: pointer;
-        background-color: orange;
-        box-shadow: none;
-    }
-
-    button a {
-        text-decoration: none;
-    }
-
-    /* #edit-form button,
-    #sign-form button {
-        display: inline-block;
-    } */
-
-    img {
-        background-color: white;
     }
 
     ul {
-        list-style: none;
-        font-style: italic;
-        font-size: 16px;
-        padding: 0;
+        font-size: 14px;
     }
     li {
         margin: 4px 0;
+    }
+    #main-wrapper {
+        background: linear-gradient(
+            to top,
+            rgba(255, 0, 0, 0),
+            rgba(245, 245, 220, 0.4),
+            rgba(245, 245, 220, 1)
+        );
     }
 }
