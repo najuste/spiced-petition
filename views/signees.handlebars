@@ -2,7 +2,7 @@
 
 <h3>Check the last signatures on board
     {{#if req_city}}
-    in <strong>{{req_city}}</strong>
+    in <strong><span style="text-transform: capitalize">{{req_city}}</span></strong>
     {{/if}}
 </h3>
 
@@ -20,17 +20,17 @@
                 {{#unless ../req_city}}
 
                     {{#if city}},
-                        <a href="/petition/signers/{{city}}">{{city}}</a>
+                        <span style="text-transform: capitalize">
+                            <a href="/petition/signers/{{city}}">{{city}}</a></span>
                     {{/if}}
                 {{/unless}}
             )
             {{else}}
-                ({{#unless ../req_city}}
-
+                {{#unless ../req_city}}
                     {{#if city}}
-                        <a href="/petition/signers/{{city}}">{{city}}</a>
+                        ( <a href="/petition/signers/{{city}}">{{city}}</a> )
                     {{/if}}
-                {{/unless}})
+                {{/unless}}
             {{/if}}
 
         </li>
