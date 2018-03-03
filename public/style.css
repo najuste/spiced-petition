@@ -101,7 +101,8 @@ main {
     color: grey;
     font-style: italic;
 }
-.error-msg, .error-msg *{
+.error-msg,
+.error-msg * {
     color: red;
     font-style: italic;
 }
@@ -192,7 +193,10 @@ li {
     margin: 4px 0;
     padding-top: 10px;
 }
-.signees li {
+li span {
+    background-color: rgba(245, 245, 223, 0.8);
+}
+#signees li {
     text-transform: capitalize;
 }
 

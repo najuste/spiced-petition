@@ -1,18 +1,14 @@
 {{> controls}}
-
-<div class="page signees">
-
+<div class="page" id="signees">
     <h3>The latest signatures on board
         {{#if req_city}}
         in <strong><span style="text-transform: capitalize">{{req_city}}</span></strong>
         {{/if}}
     </h3>
-
     <h4>Already <strong>{{data.length}}</strong> signed!</h4>
-
     <ul>
         {{#each data}}
-        <li>
+        <li><span>
             {{#if homepage}}
             <a href="http://{{homepage}}">{{first}} {{last}}</a>
             {{else}}{{first}} {{last}}
@@ -33,8 +29,8 @@
                     {{/if}}
                 {{/unless}}
             {{/if}}
+        </span>
         </li>
         {{/each}}
     </ul>
-
 </div>

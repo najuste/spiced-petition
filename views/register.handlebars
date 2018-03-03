@@ -1,6 +1,4 @@
-
-<div class="page" id="start-page">
-
+<div class="page" id="start">
     <div id="petition-msg">
         <h4><ul>
             <li>Location of our devices is being tracked and we are not in control of it.
@@ -16,8 +14,9 @@
             <p>{{error}}</p>
         {{/if}}
         </div>
-
         <form id="register-form" method="POST">
+            <input type="hidden" name="_city" value="">
+            <input type="hidden" name="_latlon" value="">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="text" name="first" placeholder="First name">
             <input type="text" name="last" placeholder="Last name">
@@ -30,4 +29,3 @@
     </div>
 
 </div>
-<script type="text/javascript" src="map.js"></script>

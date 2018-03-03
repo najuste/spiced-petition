@@ -1,18 +1,15 @@
 <div class="page">
     <div class="desc">
-        <p>Let me know a bit more about yourself! I'd be grateful if you could fill this form.
-        Not obligatory though.</p>
-
+        <h4><em>{{first}} {{last}}</em></h4>
+        <p>Let me know a bit more about yourself! </p>
+        <p><span class="notice-msg">Not obligatory though</span></p>
     </div>
 <div id="info-block">
     <form id="info-form" method="POST">
-        <!-- show me the name -->
-        <h4><em>{{first}} {{last}}</em></h4><p>please share with us:</p>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="number" name="age" placeholder="Age">
-        <input type="text" name="city" placeholder="City">
+        <input type="text" name="city" placeholder="City" value="{{city}}">
         <input type="text" name="homepage" placeholder="Homepage">
-
         <button>Continue</button>
     </form>
 </div>

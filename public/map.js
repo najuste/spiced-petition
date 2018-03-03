@@ -1,31 +1,9 @@
 //on the first page init the general map and call the zoom, and then use the lat lon to lay the map of registered
 var map;
-var lat, lon;
+const city = $("input[name='_city']");
+const latlon = $("input[name='_latlon']");
 
-function getLatLon() {
-    // do something
-    return new Promise(function(resolve, reject) {
-        $.get(
-            "https://ipinfo.io",
-            function(response) {
-                console.log("Made a ping!");
-                if (!response.loc) {
-                    var location = response.city;
-                    // FIXME: no fly in, have to extract the location
-                    reject("no coordinates provided, got just city");
-                } else {
-                    location = response.loc;
-                    location = location.split(",");
-                    console.log("In a function", location);
-                    resolve(location);
-                }
-            },
-            "jsonp"
-        );
-    });
-}
-
-if ($("#start-page").length) {
+if ($("#start").length) {
     initMap([59, 0], 2);
 
     getLatLon()
@@ -39,15 +17,29 @@ if ($("#start-page").length) {
             console.log(error.message);
         });
 } else {
-    getLatLon()
-        .then(results => {
-            var [lat, lon] = results;
-            initMap([lat, lon], 12);
-        })
-        .catch(function(error) {
-            console.log(error.message);
-        });
-    //console.log("If not start page, do we know the lat and lon", lat, lon);
+    try {
+        let coor = document.cookie.split(",");
+        initMap(coor, 12);
+    } catch (err) {
+        console.log(err);
+        initMap([59, 0], 2);
+    }
+}
+
+function getLatLon() {
+    return new Promise(function(resolve, reject) {
+        $.get(
+            "https://ipinfo.io",
+            function(response) {
+                city.val(response.city);
+                let coor = response.loc.split(",");
+                latlon.val(coor);
+                document.cookie = coor; //setting http cookie
+                resolve(coor);
+            },
+            "jsonp"
+        );
+    });
 }
 
 function initMap(coor, z) {
@@ -56,8 +48,6 @@ function initMap(coor, z) {
         attributionControl: false
     }).setView(coor, z);
 
-    // get the stamen toner-lite tiles
-    // FIXME: console log error: http to HTTPS
     var Stamen_Toner = L.tileLayer(
         "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}",
         {
@@ -85,6 +75,3 @@ function setMapRect() {
     map.invalidateSize();
     //console.log("window size:", $(window).height(), $(window).width());
 }
-
-// TODO:
-/////Better would be either to store lat lon in a cookie or get the tiles and store them

@@ -69,6 +69,11 @@ app.post("/register", csrf, function(req, res) {
     let last = req.body.last;
     let email = req.body.email;
 
+    req.session.map = {
+        city: req.body._city,
+        latlon: req.body._latlon.split(",")
+    };
+
     hashPassword(req.body.password)
         .then(password => {
             return db.register(first, last, email, password).then(results => {
@@ -76,6 +81,7 @@ app.post("/register", csrf, function(req, res) {
                 user_id = results.rows[0].id;
                 return db.storeInfo(user_id).then(() => {
                     req.session.loggedin = { first, last, email, user_id };
+
                     res.redirect("/info");
                 });
             });
@@ -102,12 +108,12 @@ app.get("/info", csrf, function(req, res) {
     if (req.session.loggedin.info) {
         res.redirect("/petition/edit");
     }
-
     res.render("info", {
         layout: "main",
         csrfToken: req.csrfToken(),
         first: req.session.loggedin.first,
-        last: req.session.loggedin.last
+        last: req.session.loggedin.last,
+        city: req.session.map.city
     });
 });
 
@@ -266,7 +272,9 @@ app.post("/login", csrf, function(req, res) {
                                         setTimeout(function() {
                                             res.render("login", {
                                                 layout: "main",
-                                                error: `Thanks for waiting. After the wrong password, to prevent a possible attack attempt, you won't be able to log in for ${(wrongTimes-2)*9} seconds`,
+                                                error: `Thanks for waiting. After the wrong password, to prevent a possible attack attempt, you won't be able to log in for ${(wrongTimes -
+                                                    2) *
+                                                    9} seconds`,
                                                 csrfToken: req.csrfToken()
                                             });
                                             // FIXME: should be 90

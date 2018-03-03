@@ -56,23 +56,7 @@ if ($("form").length) {
         cont.strokeStyle = "grey";
         cont.lineWidth = 1;
 
-        canvas.on("mousedown", function(e) {
-            canvas.css("background-color", "white");
-            cont.beginPath();
-            cont.moveTo(e.offsetX, e.offsetY);
-            canvas.on("mousemove", function(e) {
-                cont.lineTo(e.offsetX, e.offsetY);
-                cont.stroke();
-            });
-        });
-        canvas.on("mouseup", function() {
-            canvas.off("mousemove");
-            const dataURL = document.getElementById("canvas").toDataURL();
-            $("#input-canvas").val(dataURL);
-        });
-
         // on phone
-
         var canvasOffset = canvas.offset();
         var x, y;
 
@@ -91,6 +75,23 @@ if ($("form").length) {
             cont.lineTo(x, y);
             cont.stroke();
 
+            const dataURL = document.getElementById("canvas").toDataURL();
+            $("#input-canvas").val(dataURL);
+        });
+
+        //on device with a mouse
+
+        canvas.on("mousedown", function(e) {
+            canvas.css("background-color", "white");
+            cont.beginPath();
+            cont.moveTo(e.offsetX, e.offsetY);
+            canvas.on("mousemove", function(e) {
+                cont.lineTo(e.offsetX, e.offsetY);
+                cont.stroke();
+            });
+        });
+        canvas.on("mouseup", function() {
+            canvas.off("mousemove");
             const dataURL = document.getElementById("canvas").toDataURL();
             $("#input-canvas").val(dataURL);
         });
