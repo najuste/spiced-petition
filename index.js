@@ -253,7 +253,7 @@ app.post("/login", csrf, function(req, res) {
                                         );
                                         res.render("login", {
                                             layout: "main",
-                                            error: `The password you have entered does not match the given email. It's ${wrongTimes} times you have tried.After the third wrong attempt you will have to wait for 9 seconds to try again`,
+                                            error: `The password you have entered does not match the given email. It's ${wrongTimes} times you have tried. After the third wrong attempt you will have to wait for 9 seconds to try again`,
                                             csrfToken: req.csrfToken()
                                         });
                                     } else {
@@ -266,7 +266,7 @@ app.post("/login", csrf, function(req, res) {
                                         setTimeout(function() {
                                             res.render("login", {
                                                 layout: "main",
-                                                error: `Thanks for waiting, try again. To prevent a possible attack attempt, you won't be able to log in for ${(wrongTimes-2)*9} seconds`,
+                                                error: `Thanks for waiting. After the wrong password, to prevent a possible attack attempt, you won't be able to log in for ${(wrongTimes-2)*9} seconds`,
                                                 csrfToken: req.csrfToken()
                                             });
                                             // FIXME: should be 90
