@@ -1,7 +1,8 @@
+
 <div class="page">
     <div id="sign-block">
-        <div class="error-msg"></div>
-        <p style="color:red;font-size:20px">{{error}}</p>
+        <div class="error-msg"><p>{{error}}</p></div>
+
         <form id="login-form" method="POST">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="text" name="email" placeholder="Email">

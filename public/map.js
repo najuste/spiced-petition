@@ -51,7 +51,10 @@ if ($("#start-page").length) {
 }
 
 function initMap(coor, z) {
-    map = L.map("map", { zoomControl: false }).setView(coor, z);
+    map = L.map("map", {
+        zoomControl: false,
+        attributionControl: false
+    }).setView(coor, z);
 
     // get the stamen toner-lite tiles
     // FIXME: console log error: http to HTTPS

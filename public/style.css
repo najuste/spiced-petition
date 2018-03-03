@@ -27,6 +27,24 @@ header {
     color: white;
 }
 
+#controls {
+    height: 30px;
+    margin-top: 10px;
+}
+
+#controls button {
+    overflow: hidden;
+    width: 20%;
+    max-width: 120px;
+    margin: auto;
+    padding: 5px 10px;
+    border: none;
+    height: -webkit-fill-available;
+    border-style: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
 h1 {
     font-size: 5vw;
     padding: 0;
@@ -75,6 +93,7 @@ main {
     position: relative;
     width: 70%;
     margin: auto;
+    margin-top: 18px;
 }
 #petition-msg {
 }
@@ -82,7 +101,7 @@ main {
     color: grey;
     font-style: italic;
 }
-.error-msg {
+.error-msg, .error-msg *{
     color: red;
     font-style: italic;
 }
@@ -126,6 +145,10 @@ input:hover {
 #canvas:hover {
     cursor: text;
     box-shadow: none;
+}
+
+.signature {
+    margin: 20px auto;
 }
 
 button {
@@ -186,6 +209,15 @@ li {
     header {
         padding: 10px;
     }
+    #controls {
+        height: 20px;
+    }
+
+    #controls button {
+        width: 25%;
+        max-width: 120px;
+        padding: 2px 4px;
+    }
 
     h1 {
         font-size: 8vw;
@@ -215,7 +247,7 @@ li {
 
     button {
         margin: 10px auto;
-        height: 20px;
+        height: 25px;
         width: 80px;
         font-size: 14px;
     }

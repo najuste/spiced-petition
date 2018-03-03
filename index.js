@@ -112,8 +112,8 @@ app.get("/info", csrf, function(req, res) {
 });
 
 app.post("/info", csrf, function(req, res) {
-    let city = city.toLowerCase();
-    let homepage = homepage.req.body.homepage;
+    let city = req.body.city.toLowerCase();
+    let homepage = req.body.homepage;
 
     req.session.loggedin.info = true;
     db
@@ -239,38 +239,34 @@ app.post("/login", csrf, function(req, res) {
                             cache.get("passnot").then(wrongTimes => {
                                 if (!wrongTimes) {
                                     cache.setex("passnot", 60, 1); //setting the first
-                                    console.log("1st wrong attempt");
                                     res.render("login", {
                                         layout: "main",
-                                        error: `The password you have entered does not match the given email. Please check if you've typed it correctly`,
+                                        error: `The password you have entered does not match the given email.`,
                                         csrfToken: req.csrfToken()
                                     });
                                 } else {
-                                    //check how many times already...
                                     if (wrongTimes < 4) {
                                         cache.setex(
                                             "passnot",
-                                            10000000,
+                                            60,
                                             wrongTimes + 1
                                         );
-                                        console.log("Another wrong attempt");
                                         res.render("login", {
                                             layout: "main",
-                                            error: `It's {{wrongTimes}} times, you have entered your password wrong. After 3rd attempt you will need to wait for 5s`,
+                                            error: `The password you have entered does not match the given email. It's ${wrongTimes} times you have tried.After the third wrong attempt you will have to wait for 9 seconds to try again`,
                                             csrfToken: req.csrfToken()
                                         });
                                     } else {
-                                        console.log("You shall not pass, 5s");
                                         cache.setex(
                                             "passnot",
-                                            10000000,
+                                            60,
                                             wrongTimes + 1
                                         );
 
                                         setTimeout(function() {
                                             res.render("login", {
                                                 layout: "main",
-                                                error: `Thanks for waiting, please try again`,
+                                                error: `Thanks for waiting, try again. To prevent a possible attack attempt, you won't be able to log in for ${(wrongTimes-2)*9} seconds`,
                                                 csrfToken: req.csrfToken()
                                             });
                                             // FIXME: should be 90
@@ -279,6 +275,7 @@ app.post("/login", csrf, function(req, res) {
                                 }
                             });
                         } else {
+                            cache.del("passnot");
                             req.session.loggedin = {
                                 first: results.first,
                                 last: results.last,
@@ -286,8 +283,6 @@ app.post("/login", csrf, function(req, res) {
                                 user_id: results.id,
                                 info: true
                             };
-                            // FIXME: TEST THIS. Only if is added(!)
-                            console.log(req.session.loggedin);
                             if ("sign_id" in req.session.loggedin) {
                                 res.redirect("/petition/thanks");
                             } else {
@@ -407,6 +402,11 @@ app.get("/petition/signers/:city", function(req, res) {
             });
         })
         .catch(err => console.log(err));
+});
+
+app.get("/logout", function(req, res) {
+    delete req.session.loggedin; //deleting all cookies
+    res.redirect("/login");
 });
 
 app.listen(process.env.PORT || 8080, () => console.log("Nieko tokio"));
