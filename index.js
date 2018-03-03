@@ -28,12 +28,10 @@ app.use(
         secret:
             process.env.SESSION_SECRET ||
             require("./secrets.json").cookieSecret,
-        // maxAge: 1000 * 60 * 5
         maxAge: 1000 * 60 * 60 * 24 * 14
     })
 );
 
-//
 var csrf = csurf();
 
 app.use(function(req, res, next) {
@@ -249,7 +247,7 @@ app.post("/login", csrf, function(req, res) {
                                     });
                                 } else {
                                     //check how many times already...
-                                    if (wrongTimes < 2) {
+                                    if (wrongTimes < 4) {
                                         cache.setex(
                                             "passnot",
                                             10000000,
@@ -258,7 +256,7 @@ app.post("/login", csrf, function(req, res) {
                                         console.log("Another wrong attempt");
                                         res.render("login", {
                                             layout: "main",
-                                            error: `It's {{wrongTimes}} times, you have entered your password wrong. Please wait`,
+                                            error: `It's {{wrongTimes}} times, you have entered your password wrong. After 3rd attempt you will need to wait for 5s`,
                                             csrfToken: req.csrfToken()
                                         });
                                     } else {
@@ -268,14 +266,15 @@ app.post("/login", csrf, function(req, res) {
                                             10000000,
                                             wrongTimes + 1
                                         );
-                                        //FIXME show the messeage without rendering?? and delay rendering or do redirect?
+
                                         setTimeout(function() {
                                             res.render("login", {
                                                 layout: "main",
-                                                error: `It's {{wrongTimes}} times, you have entered your password wrong. Please wait 90 seconds to attempt another login`,
+                                                error: `Thanks for waiting, please try again`,
                                                 csrfToken: req.csrfToken()
                                             });
-                                        }, 1000 * 5);
+                                            // FIXME: should be 90
+                                        }, 1000 * 9 * (wrongTimes - 3));
                                     }
                                 }
                             });
