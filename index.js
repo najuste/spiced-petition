@@ -234,7 +234,7 @@ app.post("/login", csrf, function(req, res) {
             if (!results.rows.length) {
                 res.render("login", {
                     layout: "main",
-                    error: `The email you have entered does not match any client of yours. Please check if you typed it correctly`,
+                    error: `The email you have entered has not been registered yet. Please check if you typed it correctly or register`,
                     csrfToken: req.csrfToken()
                 });
             } else {
