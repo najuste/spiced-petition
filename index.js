@@ -228,87 +228,91 @@ app.get("/login", csrf, function(req, res) {
 
 app.post("/login", csrf, function(req, res) {
     let email = req.body.email;
-    db
-        .getDataByEmail(email)
-        .then(results => {
-            if (!results.rows.length) {
+    cache
+        .get("passnot")
+        .then(wrongTimes => {
+            if (wrongTimes >= 4) {
                 res.render("login", {
                     layout: "main",
-                    error: `The email you have entered has not been registered yet. Please check if you typed it correctly or register`,
+                    error: `The password you have entered did not match the given email again!. To prevent a possible login guess attack attempt, you won't be able to log in for ${(wrongTimes -
+                        1) *
+                        9} seconds`,
                     csrfToken: req.csrfToken()
                 });
             } else {
-                results = results.rows[0];
-                return checkPassword(req.body.password, results.password).then(
-                    val => {
-                        if (!val) {
-                            cache.get("passnot").then(wrongTimes => {
-                                if (!wrongTimes) {
-                                    cache.setex("passnot", 60, 1); //setting the first
-                                    res.render("login", {
-                                        layout: "main",
-                                        error: `The password you have entered does not match the given email.`,
-                                        csrfToken: req.csrfToken()
-                                    });
-                                } else {
-                                    if (wrongTimes < 4) {
-                                        cache.setex(
-                                            "passnot",
-                                            60,
-                                            wrongTimes + 1
-                                        );
+                db
+                    .getDataByEmail(email)
+                    .then(results => {
+                        if (!results.rows.length) {
+                            res.render("login", {
+                                layout: "main",
+                                error: `The email you have entered has not been registered yet. Please check if you typed it correctly or register`,
+                                csrfToken: req.csrfToken()
+                            });
+                        } else {
+                            results = results.rows[0];
+                            return checkPassword(
+                                req.body.password,
+                                results.password
+                            ).then(val => {
+                                if (!val) {
+                                    if (!wrongTimes) {
+                                        cache.setex("passnot", 60, 1); //setting the first
                                         res.render("login", {
                                             layout: "main",
-                                            error: `The password you have entered does not match the given email. It's ${wrongTimes} times you have tried. After the third wrong attempt you will have to wait for 9 seconds to try again`,
+                                            error: `The password you have entered did not match the given email.`,
                                             csrfToken: req.csrfToken()
                                         });
                                     } else {
-                                        cache.setex(
-                                            "passnot",
-                                            60,
-                                            wrongTimes + 1
-                                        );
-
-                                        setTimeout(function() {
+                                        if (wrongTimes < 4) {
+                                            cache.setex(
+                                                "passnot",
+                                                60,
+                                                wrongTimes + 1
+                                            );
                                             res.render("login", {
                                                 layout: "main",
-                                                error: `Thanks for waiting. After the wrong password, to prevent a possible attack attempt, you won't be able to log in for ${(wrongTimes -
-                                                    2) *
-                                                    9} seconds`,
+                                                error: `The password you have entered did not match the given email. It's
+                                                    ${wrongTimes +
+                                                        1} times you have tried.
+                                                    After the third wrong attempt you will have to wait for 9 seconds to try again`,
                                                 csrfToken: req.csrfToken()
                                             });
-                                            // FIXME: should be 90
-                                        }, 1000 * 9 * (wrongTimes - 3));
+                                        }
+                                    }
+                                } else {
+                                    cache.del("passnot");
+                                    req.session.loggedin = {
+                                        first: results.first,
+                                        last: results.last,
+                                        email: results.email,
+                                        user_id: results.id,
+                                        info: true
+                                    };
+                                    if ("sign_id" in req.session.loggedin) {
+                                        res.redirect("/petition/thanks");
+                                    } else {
+                                        db
+                                            .getSignId(
+                                                req.session.loggedin.user_id
+                                            )
+                                            .then(results => {
+                                                if (results.rows[0]) {
+                                                    req.session.loggedin.sign_id =
+                                                        results.rows[0].id;
+                                                    res.redirect(
+                                                        "/petition/thanks"
+                                                    );
+                                                }
+                                                res.redirect("/petition");
+                                            })
+                                            .catch(err => console.log(err));
                                     }
                                 }
                             });
-                        } else {
-                            cache.del("passnot");
-                            req.session.loggedin = {
-                                first: results.first,
-                                last: results.last,
-                                email: results.email,
-                                user_id: results.id,
-                                info: true
-                            };
-                            if ("sign_id" in req.session.loggedin) {
-                                res.redirect("/petition/thanks");
-                            } else {
-                                db
-                                    .getSignId(req.session.loggedin.user_id)
-                                    .then(results => {
-                                        if (results.rows[0]) {
-                                            req.session.loggedin.sign_id =
-                                                results.rows[0].id;
-                                            res.redirect("/petition/thanks");
-                                        }
-                                        res.redirect("/petition");
-                                    })
-                                    .catch(err => console.log(err));
-                            }
                         }
-                    }
-                );
+                    })
+                    .catch(err => console.log(err));
             }
         })
         .catch(err => console.log(err));
