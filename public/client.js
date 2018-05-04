@@ -31,7 +31,6 @@ if ($("form").length) {
             last.css("background", "pink");
             email.css("background-color", "pink");
             password.css("background-color", "pink");
-            //doing an email check
         }
     });
 
@@ -80,7 +79,6 @@ if ($("form").length) {
         });
 
         //on device with a mouse
-
         canvas.on("mousedown", function(e) {
             canvas.css("background-color", "white");
             cont.beginPath();

@@ -9,8 +9,7 @@ var db = spicedPg(
         `postgres:${dbUser}:${dbPass}@localhost:5432/signatures`
 );
 
-// INSERT NEW DATA
-
+// INSERT
 exports.register = function(firstname, lastname, email, hash) {
     return db.query(
         `INSERT INTO users (first, last, email, password) VALUES($1, $2, $3, $4) RETURNING id`,
@@ -33,14 +32,12 @@ exports.storeInfo = function(user_id, age, city, homepage) {
 };
 
 // GET
-
 exports.getDataByEmail = function(email) {
     return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
 };
 
 exports.getSignees = function(limit) {
     return db.query(
-        // `SELECT first AS "first", last AS "last" FROM signatures ORDER BY id DESC LIMIT ${limit}`
         `SELECT signed.first, signed.last, user_profiles.age, user_profiles.city, user_profiles.homepage
         FROM
             (SELECT * FROM
@@ -54,7 +51,6 @@ exports.getSignees = function(limit) {
 
 exports.getSigneesByCity = function(city, limit) {
     return db.query(
-        // `SELECT first AS "first", last AS "last" FROM signatures ORDER BY id DESC LIMIT ${limit}`
         `SELECT signed.first, signed.last, user_profiles.age, user_profiles.city, user_profiles.homepage
         FROM
             (SELECT * FROM
@@ -80,19 +76,7 @@ exports.getInfoById = function(id) {
     return db.query(`SELECT * FROM user_profiles WHERE user_id = $1`, [id]);
 };
 
-// exports.updateUserById = function(firstname, lastname, email, hash, user_id) {
-//     return db.query(
-//         `UPDATE user_profiles
-//         SET first =$1, last = $2, email = $3,
-//         password = COALESCE($4, password)
-//         WHERE user_id = $5
-//         AND $4 IS NOT NULL AND $4 IS DISTINCT FROM password`,
-//         [firstname, lastname, email, hash, user_id]
-//     );
-// };
-
 // UPDATES
-
 exports.updateUserById_newPass = function(
     firstname,
     lastname,
@@ -123,7 +107,6 @@ exports.updateInfoById = function(age, city, homepage, user_id) {
 };
 
 // DELETE
-
 exports.delSignature = function(user_id) {
     return db.query(`DELETE FROM signatures WHERE user_id = $1`, [user_id]);
 };

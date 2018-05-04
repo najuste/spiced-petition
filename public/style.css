@@ -59,11 +59,6 @@ h2 {
     padding: 0;
 }
 
-/* header > h1 {
-    margin-top: 0;
-    padding-top: 50px;
-} */
-
 /* custom for each handlebar */
 main {
     position: relative;
@@ -199,12 +194,6 @@ li span {
 #signees li {
     text-transform: capitalize;
 }
-
-/* footer {
-    position: absolute;
-    top: 0;
-    height: 300px;
-} */
 
 @media (max-width: 500px) {
     #petition-msg {

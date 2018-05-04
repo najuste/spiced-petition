@@ -73,5 +73,4 @@ function setMapRect() {
         .height($(window).height() - 100)
         .width($(window).width());
     map.invalidateSize();
-    //console.log("window size:", $(window).height(), $(window).width());
 }

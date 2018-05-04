@@ -37,7 +37,7 @@ var csrf = csurf();
 app.use(function(req, res, next) {
     if (req.session.loggedin) {
         if (req.url !== "/register" && req.url !== "/login") {
-            next(); //if logged in & not accessing registration or login, let him in
+            next();
         } else {
             res.redirect("/petition");
         }
@@ -46,7 +46,7 @@ app.use(function(req, res, next) {
             !req.session.loggedin &&
             (req.url == "/register" || req.url == "/login")
         ) {
-            next(); //if not logged in and accessing register or login, let him access
+            next();
         } else {
             res.redirect("/register");
         }
@@ -81,7 +81,6 @@ app.post("/register", csrf, function(req, res) {
                 user_id = results.rows[0].id;
                 return db.storeInfo(user_id).then(() => {
                     req.session.loggedin = { first, last, email, user_id };
-
                     res.redirect("/info");
                 });
             });
@@ -146,7 +145,6 @@ app.get("/petition/edit", csrf, function(req, res) {
         .then(results => {
             if (results.rows.length) {
                 const { age, city, homepage } = results.rows[0];
-                //populate the form with values
                 const data = { first, last, email, age, city, homepage };
                 res.render("edit", {
                     layout: "main",
@@ -170,7 +168,6 @@ app.post("/petition/edit", csrf, function(req, res) {
     cache.del("cachedsigners");
 
     if (!new_password) {
-        //no password passed, no need to hash
         db
             .updateUserById(first, last, email, req.session.loggedin.user_id)
             .then(() => {
@@ -187,7 +184,6 @@ app.post("/petition/edit", csrf, function(req, res) {
             })
             .catch(err => console.log(err));
     } else {
-        //hash password
         hashPassword(new_password)
             .then(password => {
                 return db
@@ -257,7 +253,7 @@ app.post("/login", csrf, function(req, res) {
                             ).then(val => {
                                 if (!val) {
                                     if (!wrongTimes) {
-                                        cache.setex("passnot", 60, 1); //setting the first
+                                        cache.setex("passnot", 60, 1);
                                         res.render("login", {
                                             layout: "main",
                                             error: `The password you have entered did not match the given email.`,
@@ -362,16 +358,14 @@ app.get("/cancelpetition", function(req, res) {
     db
         .delSignature(req.session.loggedin.user_id)
         .then(() => {
-            cache.del("cachedsigners"); //updating cache
-            delete req.session.loggedin.sign_id; //updating cookies
+            cache.del("cachedsigners");
+            delete req.session.loggedin.sign_id;
             res.redirect("/petition");
         })
         .catch(err => console.log(err));
 });
 
 app.get("/petition/signers", function(req, res) {
-    //redis check if there is a list of signers if not populate with
-    // cache.del("cachedsigners");
     cache
         .get("cachedsigners")
         .then(cachedResults => {
@@ -380,14 +374,13 @@ app.get("/petition/signers", function(req, res) {
                 db
                     .getSignees(30) // limiting results
                     .then(results => {
-                        //setting results to cache
                         cache.setex(
                             "cachedsigners",
                             60 * 60 * 24 * 14,
                             results.rows
                         );
                         res.render("signees", {
-                            data: results.rows, // saving an array of objects
+                            data: results.rows,
                             layout: "main"
                         });
                     })
@@ -405,7 +398,7 @@ app.get("/petition/signers", function(req, res) {
 
 app.get("/petition/signers/:city", function(req, res) {
     db
-        .getSigneesByCity(req.params.city, 30) // limiting results
+        .getSigneesByCity(req.params.city, 30)
         .then(results => {
             res.render("signees", {
                 req_city: req.params.city,
@@ -417,11 +410,11 @@ app.get("/petition/signers/:city", function(req, res) {
 });
 
 app.get("/logout", function(req, res) {
-    delete req.session.loggedin; //deleting all cookies
+    delete req.session.loggedin;
     res.redirect("/login");
 });
 
-app.listen(process.env.PORT || 8080, () => console.log("Nieko tokio"));
+app.listen(process.env.PORT || 8080, () => console.log("Listening..."));
 
 function hashPassword(plainTextPassword) {
     return new Promise(function(resolve, reject) {
