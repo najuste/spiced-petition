@@ -10,6 +10,7 @@ __Let's call for more transparency in geoprivacy!!!__
 Petition platform built with `Handlebars.js` & `jQuery` at the front, `Node.js` & `Express.js` for the back.
 
 For getting and displaying user location - `ipinfo.io`(getting location from IP with API call) and `Leaflet.js API` (mapping) are used.
+
 ![alt text](https://github.com/najuste/spiced-petition/blob/master/gifs/petition_gettingLocation.gif "Showing user, that browser shares location without permision")
 
 Data stored in `Postgres` DB & `Redis` a nosql DB is used for caching a list of signers.
