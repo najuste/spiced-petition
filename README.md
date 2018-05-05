@@ -7,13 +7,15 @@ __Let's call for more transparency in geoprivacy!!!__
 
 ## Technology
 
-Petition platform built with `Handlebars.js` & `jQuery` at the front, `Node.js` & `Express.js` for the back.
+Petition platform built with `jQuery`, templated with `Handlebars.js` at the front, `Node.js` & `Express.js` for the back. 
+For registration asked password is encrypted with `bcrypt`, and thus before storing hashed and salted.
+When registered, user information with `csurf` is stored in cookies, which helps to recognise user and log him in automatically.
 
-For getting and displaying user location - `ipinfo.io`(getting location from IP with API call) and `Leaflet.js API` (mapping) are used.
+For getting and displaying user location 2 API's are used - `ipinfo.io` for getting location from IP and `Leaflet.js` for displaying it.
 
 ![alt text](https://github.com/najuste/spiced-petition/blob/master/gifs/petition_gettingLocation.gif "Showing user, that browser shares location without permision")
 
-Data stored in `Postgres` DB & `Redis` a nosql DB is used for caching a list of signers.
+Data stored in `Postgres` DB, but also `Redis` a nosql DB is used for caching a list of signers. 
 
 ## App Pages
 
@@ -31,4 +33,4 @@ Data stored in `Postgres` DB & `Redis` a nosql DB is used for caching a list of 
 _should have node installed_
 To install dependencies: `npm install`. To run page on localhost:8080 launch server from command line with `node index.js`.
 
-Available on heroku: https://geoprivacy.herokuapp.com/
+Also deployed on heroku. https://geoprivacy.herokuapp.com/
